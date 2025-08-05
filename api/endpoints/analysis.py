@@ -57,23 +57,31 @@ async def analyze_post(request: PostAnalysisRequest):
         stats = get_post_statistics(request.text)
         text_stats = TextStatistics(**stats)
         
-        # TODO: This is a placeholder - we'll implement the actual AI analysis in Stage 3
-        # For now, return a basic analysis structure
+        # Real AI analysis using OpenAI and sentiment analysis
+        from services.openai_client import get_openai_client
+        from services.sentiment_analyzer import analyze_sentiment
         
-        # Placeholder sentiment analysis
+        # Get sentiment analysis using TextBlob/VADER
+        sentiment_result = analyze_sentiment(request.text)
+        
+        # Get comprehensive AI analysis using OpenAI
+        openai_client = get_openai_client()
+        ai_analysis = openai_client.analyze_post(request.text, "comprehensive")
+        
+        # Create sentiment analysis result
         sentiment = SentimentAnalysis(
-            sentiment=SentimentType.NEUTRAL,
-            confidence=0.5,
-            score=0.0,
-            explanation="Sentiment analysis not yet implemented"
+            sentiment=SentimentType(sentiment_result["sentiment"]),
+            confidence=sentiment_result["confidence"],
+            score=sentiment_result["score"],
+            explanation=sentiment_result["explanation"]
         )
         
-        # Placeholder toxicity analysis
+        # Create toxicity analysis result
         toxicity = ToxicityAnalysis(
-            is_toxic=False,
-            confidence=0.5,
-            categories={},
-            explanation="Toxicity analysis not yet implemented"
+            is_toxic=ai_analysis.get("toxicity", {}).get("is_toxic", False),
+            confidence=ai_analysis.get("toxicity", {}).get("confidence", 0.5),
+            categories=ai_analysis.get("toxicity", {}).get("categories", {}),
+            explanation=ai_analysis.get("toxicity", {}).get("explanation", "Analysis completed")
         )
         
         # Calculate analysis time
@@ -93,9 +101,9 @@ async def analyze_post(request: PostAnalysisRequest):
             ethical_risks=[],
             suggestions=[],
             statistics=text_stats,
-            overall_risk=RiskLevel.LOW,
-            summary="Basic analysis completed. AI analysis features coming in next stage.",
-            recommendations=["Implement AI analysis services"]
+            overall_risk=RiskLevel(ai_analysis.get("overall_risk", "low")),
+            summary=ai_analysis.get("summary", "Analysis completed successfully."),
+            recommendations=ai_analysis.get("recommendations", [])
         )
         
         # Log analysis completion

@@ -79,6 +79,39 @@ def start_backend():
     except Exception as e:
         print(f"❌ Failed to start server: {e}")
 
+def start_frontend():
+    """Start the Streamlit frontend."""
+    print("\n🎨 Starting CivicGPT Frontend...")
+    print("=" * 50)
+    
+    try:
+        # Check if streamlit is available
+        try:
+            import streamlit
+        except ImportError:
+            print("📦 Installing Streamlit...")
+            subprocess.run([sys.executable, "-m", "pip", "install", "streamlit"], check=True)
+        
+        # Start streamlit
+        cmd = [
+            sys.executable, "-m", "streamlit", "run", "frontend/app.py",
+            "--server.port", "8501",
+            "--server.address", "0.0.0.0"
+        ]
+        
+        print(f"Running: {' '.join(cmd)}")
+        print("\n🎨 Frontend will be available at: http://localhost:8501")
+        print("🔌 Make sure backend is running at: http://localhost:8000")
+        print("\n⏹️  Press Ctrl+C to stop the frontend")
+        print("=" * 50)
+        
+        subprocess.run(cmd)
+        
+    except KeyboardInterrupt:
+        print("\n👋 Frontend stopped by user")
+    except Exception as e:
+        print(f"❌ Failed to start frontend: {e}")
+
 def main():
     """Main development startup function."""
     print("🎯 CivicGPT Development Startup")
@@ -107,25 +140,29 @@ def main():
     # Ask user what to do
     print("\n🎮 What would you like to do?")
     print("1. Start backend server")
-    print("2. Run tests")
-    print("3. Exit")
+    print("2. Start frontend")
+    print("3. Run tests")
+    print("4. Exit")
     
     while True:
         try:
-            choice = input("\nEnter your choice (1-3): ").strip()
+            choice = input("\nEnter your choice (1-4): ").strip()
             
             if choice == "1":
                 start_backend()
                 break
             elif choice == "2":
+                start_frontend()
+                break
+            elif choice == "3":
                 print("\n🧪 Running tests...")
                 subprocess.run([sys.executable, "tests/test_backend.py"])
                 break
-            elif choice == "3":
+            elif choice == "4":
                 print("👋 Goodbye!")
                 break
             else:
-                print("❌ Invalid choice. Please enter 1, 2, or 3.")
+                print("❌ Invalid choice. Please enter 1, 2, 3, or 4.")
         except KeyboardInterrupt:
             print("\n👋 Goodbye!")
             break
