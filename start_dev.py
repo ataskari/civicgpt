@@ -141,12 +141,14 @@ def main():
     print("\n🎮 What would you like to do?")
     print("1. Start backend server")
     print("2. Start frontend")
-    print("3. Run tests")
-    print("4. Exit")
+    print("3. Run unit tests")
+    print("4. Run integration tests")
+    print("5. Run all tests")
+    print("6. Exit")
     
     while True:
         try:
-            choice = input("\nEnter your choice (1-4): ").strip()
+            choice = input("\nEnter your choice (1-6): ").strip()
             
             if choice == "1":
                 start_backend()
@@ -155,14 +157,25 @@ def main():
                 start_frontend()
                 break
             elif choice == "3":
-                print("\n🧪 Running tests...")
-                subprocess.run([sys.executable, "tests/test_backend.py"])
+                print("\n🧪 Running unit tests...")
+                subprocess.run([sys.executable, "tests/test_unit.py"])
                 break
             elif choice == "4":
+                print("\n🧪 Running integration tests...")
+                subprocess.run([sys.executable, "test_integration.py"])
+                break
+            elif choice == "5":
+                print("\n🧪 Running all tests...")
+                print("📋 Unit tests:")
+                subprocess.run([sys.executable, "tests/test_unit.py"])
+                print("\n📋 Integration tests:")
+                subprocess.run([sys.executable, "test_integration.py"])
+                break
+            elif choice == "6":
                 print("👋 Goodbye!")
                 break
             else:
-                print("❌ Invalid choice. Please enter 1, 2, 3, or 4.")
+                print("❌ Invalid choice. Please enter 1, 2, 3, 4, 5, or 6.")
         except KeyboardInterrupt:
             print("\n👋 Goodbye!")
             break
